@@ -1,0 +1,8 @@
+MANIFEST
+CHANGELOG
+README
+TODO
+VERSION
+Makefile.PL
+lib/IOLayer/Base64.pm
+t/01basic.t
