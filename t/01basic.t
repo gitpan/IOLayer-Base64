@@ -1,4 +1,4 @@
-use Test::More tests => 11;
+use Test::More tests => 22;
 
 BEGIN { use_ok('IOLayer::Base64') }
 
@@ -21,6 +21,12 @@ cyBhbiBpbmRpY2F0aW9uIG9mIHRoZSByZWFsIHdvcmxkLgoKV2l0aCBsb25nIGxpbmVzIGFuZCBw
 YXJhZ3JhcGhzIGFuZCBhbGwgdGhhdCBzb3J0IG9mIHRoaW5ncy4KCkFuZCBzbyBvbiBhbmQgc28g
 b24uCi0tIApBbmQgYSBzaWduYXR1cmUK
 EOD
+
+(my $encodednoeol = $encoded) =~ s#\n##sg;
+
+# Check class methods
+
+is( IOLayer::Base64->eol,"\n",		'check eol setting first time' );
 
 # Create the encoded test-file
 
@@ -49,6 +55,39 @@ ok(
 );
 is( join( '',<$in> ),$decoded,		'check decoding' );
 ok( close( $in ),			'close decoding handle' );
+
+# Do the same, now without line endings
+
+IOLayer::Base64->eol( '' );
+is( IOLayer::Base64->eol,'',		'check eol setting second time' );
+
+# Create the encoded test-file
+
+ok(
+ open( my $out,'>:Via(IOLayer::Base64)', $file ),
+ "opening '$file' for writing without eol"
+);
+
+ok( (print $out $decoded),		'print to file without eol' );
+ok( close( $out ),			'closing encoding handle without eol' );
+
+# Check encoding without layers
+
+{
+local $/ = undef;
+ok( open( my $test,$file ),		'opening without layer without eol' );
+is( readline( $test ),$encodednoeol,	'check encoded content without eol' );
+ok( close( $test ),			'close test handle without eol' );
+}
+
+# Check decoding _with_ layers
+
+ok(
+ open( my $in,'<:Via(IOLayer::Base64)', $file ),
+ "opening '$file' for reading without eol"
+);
+is( join( '',<$in> ),$decoded,		'check decoding without eol' );
+ok( close( $in ),			'close decoding handle without eol' );
 
 # Remove whatever we created now
 

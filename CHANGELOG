@@ -1,2 +1,9 @@
+0.02	30 June 2002
+	Added support for eol() class method.  Added pod and tests for this
+	new feature.
+
+	28 June 2002
+	Added SEE ALSO section.
+
 0.01	27 June 2002
 	Initial release of IOLayer::Base64.
